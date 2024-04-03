@@ -1,0 +1,12 @@
+name: Build CI
+
+on:
+  - pull_request
+  - push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run Build CI workflow
+      uses: adafruit/workflows-circuitpython-libs/build@main

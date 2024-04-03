@@ -1,0 +1,16 @@
+name: GitHub Release Actions
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  upload-release-assets:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run GitHub Release CI workflow
+      uses: adafruit/workflows-circuitpython-libs/release-gh@main
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        upload-url: ${{ github.event.release.upload_url }}
