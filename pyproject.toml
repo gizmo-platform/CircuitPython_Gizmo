@@ -40,9 +40,7 @@ classifiers = [
 dynamic = ["dependencies", "optional-dependencies"]
 
 [tool.setuptools]
-# TODO: IF LIBRARY FILES ARE A PACKAGE FOLDER,
-#       CHANGE `py_modules = ['...']` TO `packages = ['...']`
-py-modules = ["gizmo"]
+py-modules = ["circuitpython_gizmo"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
