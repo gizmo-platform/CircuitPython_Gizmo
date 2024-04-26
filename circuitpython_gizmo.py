@@ -38,19 +38,22 @@ class GizmoButtons:
         self.right_stick = False
 
     def update(self, data):
-        """Parses state from raw bytes"""
-        self.x = data[0] > 0
-        self.a = data[1] > 0
-        self.b = data[2] > 0
-        self.y = data[3] > 0
-        self.left_shoulder = data[4] > 0
-        self.right_shoulder = data[5] > 0
-        self.left_trigger = data[6] > 0
-        self.right_trigger = data[7] > 0
-        self.back = data[8] > 0
-        self.start = data[9] > 0
-        self.left_stick = data[10] > 0
-        self.right_stick = data[11] > 0
+        """Parses state from raw bytes
+
+        :param bytearray data: The full i2c data buffer
+        """
+        self.x = data[6] > 0
+        self.a = data[7] > 0
+        self.b = data[8] > 0
+        self.y = data[9] > 0
+        self.left_shoulder = data[10] > 0
+        self.right_shoulder = data[11] > 0
+        self.left_trigger = data[12] > 0
+        self.right_trigger = data[13] > 0
+        self.back = data[14] > 0
+        self.start = data[15] > 0
+        self.left_stick = data[16] > 0
+        self.right_stick = data[17] > 0
 
 
 class GizmoAxes:
@@ -65,7 +68,10 @@ class GizmoAxes:
         self.dpad_y = 127
 
     def update(self, data):
-        """Parses state from raw bytes"""
+        """Parses state from raw bytes
+
+        :param bytearray data: The full i2c data buffer
+        """
         self.left_x = data[0]
         self.left_y = data[1]
         self.right_x = data[2]
@@ -107,6 +113,7 @@ class Gizmo:
     def __init__(self) -> None:
         self.axes = GizmoAxes()
         self.buttons = GizmoButtons()
+        self.i2c_buffer = bytearray(18)
         try:
             self.i2c = busio.I2C(sda=board.GP2, scl=board.GP3)
             while self.i2c.try_lock():
@@ -133,11 +140,10 @@ class Gizmo:
         """Polls system processor for latest gamepad state"""
         if self.i2c is None:
             return
-        buffer = bytearray(18)
         try:
-            self.i2c.readfrom_into(8, buffer)
-            self.axes.update(buffer[0:6])
-            self.buttons.update(buffer[6:18])
+            self.i2c.readfrom_into(8, self.i2c_buffer)
+            self.axes.update(self.i2c_buffer)
+            self.buttons.update(self.i2c_buffer)
         except OSError:
             self.axes.update([127] * 6)
             self.buttons.update([0] * 12)
