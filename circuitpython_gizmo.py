@@ -83,14 +83,15 @@ class GizmoAxes:
 class Gizmo:
     """Gizmo interface object"""
 
+    SERVO_1 = board.GP18
+    SERVO_2 = board.GP19
+    SERVO_3 = board.GP20
+    SERVO_4 = board.GP21
+
     MOTOR_1 = board.GP14
     MOTOR_2 = board.GP15
     MOTOR_3 = board.GP16
     MOTOR_4 = board.GP17
-    MOTOR_5 = board.GP18
-    MOTOR_6 = board.GP19
-    MOTOR_7 = board.GP20
-    MOTOR_8 = board.GP21
 
     GPIO_1 = board.GP6
     GPIO_2 = board.GP7
@@ -105,8 +106,11 @@ class Gizmo:
     ADC_2 = board.GP27_A1
     ADC_3 = board.GP28_A2
 
-    UART_TX = board.GP4
-    UART_RX = board.GP5
+    UART_0_TX = board.GP0
+    UART_0_RX = board.GP1
+
+    UART_1_TX = board.GP4
+    UART_1_RX = board.GP5
 
     NEOPIXEL = board.GP22
 
