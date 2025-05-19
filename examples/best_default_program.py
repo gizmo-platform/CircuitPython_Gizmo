@@ -16,18 +16,19 @@ Left Joystick Up/Down    - Robot Fwd/Rev
 Left Joystick Left/Right - Robot Turn Left/Right
 
 These controls work in both modes:
-Right Trigger            - Motor 4 Forward
-Right Shoulder Button    - Motor 4 Reverse
-Left Trigger             - Servo 1 to 0 degrees
-Left Shoulder Button     - Servo 1 to 90 degrees
+Right Trigger            - Motors 2 & 4 Forward
+Right Shoulder Button    - Motors 2 & 4 Reverse
+Left Trigger             - All servos to 0 degrees
+Left Shoulder Button     - All servos to 90 degrees
 
 When neither the left trigger nor shoulder button are pressed, the servo will
 go to 45 degrees.
 """
 
 import board
-import pwmio
 import digitalio
+import pwmio
+import time
 from adafruit_motor import servo
 from adafruit_simplemath import map_range, constrain
 from circuitpython_gizmo import Gizmo
@@ -36,9 +37,9 @@ from circuitpython_gizmo import Gizmo
 # management system and the gizmo system processor
 gizmo = Gizmo()
 
-pwm_freq = 50 # Hertz
-min_pulse = 1000 # milliseconds
-max_pulse = 2000 # milliseconds
+pwm_freq = 50  # Hertz
+min_pulse = 1000  # milliseconds
+max_pulse = 2000  # milliseconds
 servo_range = 90  # degrees
 
 # Configure the motors & servos for the ports they are connected to
@@ -47,18 +48,41 @@ motor_left = servo.ContinuousServo(
     min_pulse=min_pulse,
     max_pulse=max_pulse
 )
+motor_task_a = servo.ContinuousServo(
+    pwmio.PWMOut(gizmo.MOTOR_2, frequency=pwm_freq),
+    min_pulse=min_pulse,
+    max_pulse=max_pulse
+)
 motor_right = servo.ContinuousServo(
     pwmio.PWMOut(gizmo.MOTOR_3, frequency=pwm_freq),
     min_pulse=min_pulse,
     max_pulse=max_pulse
 )
-motor_task = servo.ContinuousServo(
+motor_task_b = servo.ContinuousServo(
     pwmio.PWMOut(gizmo.MOTOR_4, frequency=pwm_freq),
     min_pulse=min_pulse,
     max_pulse=max_pulse
 )
-servo_task = servo.Servo(
+servo_1 = servo.Servo(
     pwmio.PWMOut(gizmo.SERVO_1, frequency=pwm_freq),
+    actuation_range=servo_range,
+    min_pulse=min_pulse,
+    max_pulse=max_pulse
+)
+servo_2 = servo.Servo(
+    pwmio.PWMOut(gizmo.SERVO_2, frequency=pwm_freq),
+    actuation_range=servo_range,
+    min_pulse=min_pulse,
+    max_pulse=max_pulse
+)
+servo_3 = servo.Servo(
+    pwmio.PWMOut(gizmo.SERVO_3, frequency=pwm_freq),
+    actuation_range=servo_range,
+    min_pulse=min_pulse,
+    max_pulse=max_pulse
+)
+servo_4 = servo.Servo(
+    pwmio.PWMOut(gizmo.SERVO_4, frequency=pwm_freq),
     actuation_range=servo_range,
     min_pulse=min_pulse,
     max_pulse=max_pulse
@@ -77,9 +101,9 @@ prev_start_button = False
 
 # Keep running forever
 while True:
-    # Toggle the built-in LED each time through the loop so we can see
+    # Toggle the built-in LED each second so we can see
     # that the program really is running.
-    builtin_led.value = not builtin_led.value
+    builtin_led.value = time.time() % 2 == 0
 
     # Refreshes the information about axis and button states
     gizmo.refresh()
@@ -105,16 +129,28 @@ while True:
 
     # Control task motor with right trigger / shoulder button
     if gizmo.buttons.right_trigger:
-        motor_task.throttle = 1.0
+        motor_task_a.throttle = 1.0
+        motor_task_b.throttle = 1.0
     elif gizmo.buttons.right_shoulder:
-        motor_task.throttle = -1.0
+        motor_task_a.throttle = -1.0
+        motor_task_b.throttle = -1.0
     else:
-        motor_task.throttle = 0.0
+        motor_task_a.throttle = 0.0
+        motor_task_b.throttle = 0.0
 
     # Control task servo with left trigger / shoulder button
     if gizmo.buttons.left_trigger:
-        servo_task.angle = 0
+        servo_1.angle = 0
+        servo_2.angle = 0
+        servo_3.angle = 0
+        servo_4.angle = 0
     elif gizmo.buttons.left_shoulder:
-        servo_task.angle = 90
+        servo_1.angle = 90
+        servo_2.angle = 90
+        servo_3.angle = 90
+        servo_4.angle = 90
     else:
-        servo_task.angle = 45
+        servo_1.angle = 45
+        servo_2.angle = 45
+        servo_3.angle = 45
+        servo_4.angle = 45
