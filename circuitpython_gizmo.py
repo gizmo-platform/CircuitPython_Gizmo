@@ -146,8 +146,7 @@ class Gizmo:
             return
         try:
             self.i2c.readfrom_into(8, self.i2c_buffer)
-            self.axes.update(self.i2c_buffer)
-            self.buttons.update(self.i2c_buffer)
         except OSError:
-            self.axes.update([127] * 6)
-            self.buttons.update([0] * 12)
+            self.i2c_buffer = bytearray(([127] * 6) + ([0] * 12))
+        self.axes.update(self.i2c_buffer)
+        self.buttons.update(self.i2c_buffer)
